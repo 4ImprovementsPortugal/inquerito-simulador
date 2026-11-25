@@ -218,3 +218,16 @@ img{display:block;max-width:100%}button,input,textarea{font:inherit}button{curso
 .survey-first h1{font-size:clamp(38px,4.6vw,66px);margin-bottom:20px}
 .survey-first .survey-pitch{padding-top:0}
 @media(max-width:830px){.survey-first{padding-top:22px}.survey-first .hero-copy-logo{margin-bottom:16px}.survey-first h1{font-size:clamp(30px,8vw,44px);margin-bottom:12px}.survey-first .survey-points,.survey-first .survey-disclaimer{display:none}}
+
+/* Simulador: a página das perguntas enche o ecrã, sem faixa clara por baixo do rodapé */
+body[data-page="survey"]{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+body[data-page="survey"] main{flex:1;display:flex;flex-direction:column}
+body[data-page="survey"] .survey-first{flex:1;display:flex;align-items:center;min-height:0;padding-bottom:clamp(36px,5vw,72px)}
+body[data-page="survey"] .survey-layout{align-items:center}
+.survey-first h1{line-height:1.05;margin-bottom:22px}
+.survey-first h1 .text-gold{display:block}
+.footer .cookie-settings-link{font-size:12px;color:rgba(245,244,240,.7)}
+.footer-links{align-items:center}
+
+/* título em duas linhas: pergunta e resposta */
+@media(min-width:831px){.survey-first h1{font-size:clamp(30px,2.9vw,42px)}}
