@@ -231,3 +231,6 @@ body[data-page="survey"] .survey-layout{align-items:center}
 
 /* título em duas linhas: pergunta e resposta */
 @media(min-width:831px){.survey-first h1{font-size:clamp(30px,2.9vw,42px)}}
+
+/* os cartões das fases são itens de lista dentro de um div: sem os pontinhos */
+.plan-phases li{list-style:none}
