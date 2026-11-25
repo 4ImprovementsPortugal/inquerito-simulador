@@ -262,7 +262,7 @@ function initThanks() {
 // Passa a Clara: mostra a ligação pessoal (o código enviado com o formulário) com copiar e WhatsApp
 function initReferral() {
   const cod = lerLS(K_MEU);
-  if (!codigoValido(cod)) return;
+  if (!qs('#referral-url') || !codigoValido(cod)) return;
   const codigo = String(cod).trim().toUpperCase();
   const ligacao = `${SITE_PRE_RESERVA}/?ref=${codigo}`;
   qs('#referral-url').textContent = ligacao;
