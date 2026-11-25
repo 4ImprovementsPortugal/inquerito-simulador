@@ -214,6 +214,7 @@ function initThanks() {
   const first = (result.firstName || '').slice(0, 80);
   if (!adequada(result.answers)) {
     qs('#not-fit').hidden = false;
+    document.body.classList.add('result-not-fit');
     qs('#notfit-name').textContent = first ? `, ${first}` : '';
     marcar('simulador_resultado', { adequada: false });
     return;

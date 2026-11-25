@@ -237,3 +237,17 @@ body[data-page="survey"] .survey-layout{align-items:center}
 
 /* visto e «Simulador concluído» na mesma linha */
 .check-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}.check-header .check-icon{margin:0;flex:none}.inner-hero .check-header .overline{margin:0}
+
+/* Resultado: a página enche sempre o ecrã (sem faixa clara por baixo do rodapé) */
+body[data-page="thanks"]{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+body[data-page="thanks"] .inner-main{flex:1}
+/* «A Clara não é para ti»: cartão centrado sobre fundo escuro */
+.result-not-fit .inner-main{display:flex;align-items:center;background:var(--ink);padding:clamp(32px,6vw,80px) 0}
+.not-fit{max-width:680px;margin-inline:auto;background:var(--card);color:var(--ink);border-radius:26px;padding:clamp(30px,5vw,58px) clamp(22px,5vw,60px);text-align:center;box-shadow:0 30px 70px -35px #000}
+.not-fit-avatar{margin:0 auto 20px;width:84px;height:84px}
+.not-fit .overline{margin-bottom:14px}
+.not-fit h1{font-size:clamp(28px,3.4vw,42px);line-height:1.1;margin-bottom:20px}
+.not-fit p:not(.overline){color:#505257;font-size:16px;margin:0 auto 14px;max-width:520px}
+.not-fit .btn{margin-top:16px;min-width:220px}
+@media(max-width:640px){.not-fit .btn{width:100%}}
+.not-fit .nf-ola{display:block}
