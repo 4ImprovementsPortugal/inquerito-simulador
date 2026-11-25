@@ -1,0 +1,62 @@
+/* o inquérito vira um contacto no GHL: dados, etiquetas para os workflows e uma nota com as respostas.
+   Copiado e reduzido de netlify/ghl.js do site principal (N5BRAND/n5-clara-site). */
+import { etiquetaPagina } from '../js/origem.js'
+import { lerRespostas, resumoInquerito, planoDoConsultor, adequada } from '../js/inquerito.js'
+
+export const PRODUTO = 'N5 Clara'
+export const ETIQUETA = 'n5-clara'
+export const API = 'https://services.leadconnectorhq.com'
+
+const nomeSeparado = nome => {
+  const [primeiro, ...resto] = String(nome || '').trim().split(/\s+/)
+  return resto.length ? { firstName: primeiro, lastName: resto.join(' ') } : { firstName: primeiro }
+}
+
+/* números portugueses sem indicativo passam a +351; o resto segue como veio */
+export function telefone(t) {
+  const digitos = String(t || '').replace(/[^\d+]/g, '')
+  if (!digitos) return undefined
+  if (digitos.startsWith('+')) return digitos
+  if (digitos.startsWith('00')) return '+' + digitos.slice(2)
+  if (digitos.length === 9) return '+351' + digitos
+  return '+' + digitos
+}
+
+const sem = o => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== ''))
+const daOrigem = d => (d.origem ? [etiquetaPagina(d.origem)].filter(Boolean) : [])
+const linhasExtra = d => (d.origem ? [`Página: ${d.origem}`] : [])
+
+const CODIGO = /^[A-HJ-NP-Z2-9]{6}$/
+const codigoPassa = d => (CODIGO.test(String(d.codigo || '').toUpperCase()) ? String(d.codigo).toUpperCase() : '')
+
+export function paraGhl(dados, { campoCodigo } = {}) {
+  if (!dados?.email) return null
+  const r = lerRespostas(dados.respostas)
+  const p = planoDoConsultor(r)
+  const passa = codigoPassa(dados)
+  const base = {
+    contacto: { ...nomeSeparado(dados.nome), email: dados.email, phone: telefone(dados.telefone), source: `Simulador ${PRODUTO}`, ...(passa && campoCodigo ? { customFields: [{ id: campoCodigo, field_value: passa }] } : {}) },
+    /* quem a Clara não serve fica com etiqueta própria, sem a do voucher, para os workflows não lhe enviarem ofertas */
+    etiquetas: [ETIQUETA, 'simulador-clara', ...(adequada(r) ? ['simulador-adequado', 'voucher-clara-15-dias', `plano-${p.plano}`] : ['simulador-nao-adequado']), ...daOrigem(dados)],
+    nota: [`Simulador da ${PRODUTO}.`, ...(adequada(r)
+      ? ['Resultado: a Clara é para esta pessoa.', `Voucher: ${dados.voucher || 'por gerar'} (15 dias do plano Clara, um por pessoa, não se junta à pré-reserva).`, `Plano que cobre o que escolheu: ${p.nomePlano}`, ...(passa ? [`Código Passa a Clara: ${passa}`] : [])]
+      : ['Resultado: a Clara ainda não é para esta pessoa (menos de 2 anos como consultor). Sem voucher.']), '', resumoInquerito(r), ...linhasExtra(dados)].join('\n'),
+  }
+  return { ...base, contacto: sem(base.contacto) }
+}
+
+/* cria ou atualiza o contacto pelo email, junta as etiquetas e deixa a nota */
+export async function enviarParaGhl({ dados, token, localizacao, pedir = fetch, campoCodigo = typeof process === 'undefined' ? undefined : process.env.GHL_CAMPO_CODIGO }) {
+  const r = paraGhl(dados, { campoCodigo })
+  if (!r) return { ok: false, motivo: 'sem-email' }
+  const cabecalhos = { Authorization: `Bearer ${token}`, Version: '2021-07-28', 'Content-Type': 'application/json', Accept: 'application/json' }
+  const chamar = async (caminho, corpo) => {
+    const resp = await pedir(API + caminho, { method: 'POST', headers: cabecalhos, body: JSON.stringify(corpo) })
+    if (!resp.ok) throw new Error(`GHL ${caminho} respondeu ${resp.status}`)
+    return resp.json()
+  }
+  const { contact } = await chamar('/contacts/upsert', { locationId: localizacao, ...r.contacto })
+  await chamar(`/contacts/${contact.id}/tags`, { tags: r.etiquetas })
+  await chamar(`/contacts/${contact.id}/notes`, { body: r.nota })
+  return { ok: true, id: contact.id }
+}
