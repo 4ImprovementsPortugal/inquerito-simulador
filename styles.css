@@ -211,3 +211,10 @@ img{display:block;max-width:100%}button,input,textarea{font:inherit}button{curso
 .referral-actions .referral-code{margin:12px 0 0;font-size:14px;color:rgba(245,244,240,.8)}.referral-code strong{font-family:"Courier New",monospace;letter-spacing:3px;color:#F5F4F0;font-size:16px}
 .referral-actions .btn-outline{background:transparent;border:1.5px solid rgba(245,244,240,.6);color:var(--cream);box-shadow:none}.referral-actions .btn-outline:hover{background:#3b4048}
 .referral-panel a{color:var(--gold)}
+
+/* Simulador: as perguntas são a primeira coisa na página */
+.survey-first{min-height:calc(100vh - 80px);padding-top:clamp(28px,5vw,72px)}
+.survey-first .hero-copy-logo{margin-bottom:28px}
+.survey-first h1{font-size:clamp(38px,4.6vw,66px);margin-bottom:20px}
+.survey-first .survey-pitch{padding-top:0}
+@media(max-width:830px){.survey-first{padding-top:22px}.survey-first .hero-copy-logo{margin-bottom:16px}.survey-first h1{font-size:clamp(30px,8vw,44px);margin-bottom:12px}.survey-first .survey-points,.survey-first .survey-disclaimer{display:none}}

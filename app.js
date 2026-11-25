@@ -219,6 +219,7 @@ function initThanks() {
     return;
   }
   qs('#has-result').hidden = false;
+  qs('#after-result').hidden = false; // o resto da página só aparece depois de um diagnóstico favorável
   marcar('simulador_resultado', { adequada: true });
 
   const p = planoDoConsultor(result.answers);
