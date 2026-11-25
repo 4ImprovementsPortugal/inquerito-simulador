@@ -167,9 +167,10 @@ function initSurvey() {
       });
       clearTimeout(timer);
       // Servidor local simples (python -m http.server) não aceita POST: deixa testar o resto do percurso.
-      const local = ['localhost', '127.0.0.1'].includes(location.hostname);
+      // o GitHub Pages serve só para ver a página: também não recebe o formulário
+      const local = ['localhost', '127.0.0.1'].includes(location.hostname) || location.hostname.endsWith('.github.io');
       if (!res.ok && local && [404, 405, 501].includes(res.status)) {
-        console.warn('Modo local: o formulário não foi enviado (só a Netlify recebe o POST). Segue para a página de obrigado.');
+        console.warn('Modo de pré-visualização: o formulário não foi enviado (só a Netlify recebe o POST). Segue para a página de obrigado.');
       } else if (!res.ok) throw new Error(`HTTP ${res.status}`);
       // Evento Lead do pixel (só dispara com marketing aceite, ver pixel.js). O webhook do GHL é chamado pela função da Netlify.
       const serve = adequada(clean);

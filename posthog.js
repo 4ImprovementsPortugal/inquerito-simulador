@@ -18,7 +18,7 @@
   let ph = null;
   let escolha = null; // { estatistica, marketing } depois de a pessoa decidir
 
-  const ligado = !LOCAIS.includes(window.location.hostname);
+  const ligado = !LOCAIS.includes(window.location.hostname) && !window.location.hostname.endsWith('.github.io');
   const lerEscolha = () => { try { return window.N5Cookies ? window.N5Cookies.get() : null; } catch (_) { return null; } };
 
   function aplicar() {

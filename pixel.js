@@ -3,6 +3,8 @@
    como diz a política de privacidade. Expõe window.N5Pixel.track(evento, dados, opcoes). */
 (() => {
   'use strict';
+  // pré-visualização no GitHub Pages: sem pixel, para não entrar nos números dos anúncios
+  if (window.location.hostname.endsWith('.github.io')) { window.N5Pixel = { track() {} }; return; }
   const PIXEL_ID = '2995898050758755';
   let ativo = false;
   const pendentes = [];
