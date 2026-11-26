@@ -4,7 +4,7 @@
    Seguem todas as respostas: «adequada: false» identifica quem a Clara não serve (sem ofertas para essas pessoas). */
 import { PERGUNTAS, limparRespostas, rotulo, planoDoConsultor, adequada } from './inquerito.js?v=16'
 
-export const WEBHOOK_SIMULADOR = 'https://services.leadconnectorhq.com/hooks/edKb7bpIXSA838eQDrMd/webhook-trigger/2715a2be-e5c4-4eb4-a92c-d37b948b6694'
+export const WEBHOOK_SIMULADOR = 'https://services.leadconnectorhq.com/hooks/edKb7bpIXSA838eQDrMd/webhook-trigger/nD6cJPysZyhBuVKPsA3R'
 
 export function corpoWebhook(dados = {}) {
   const r = limparRespostas(dados.respostas || {})

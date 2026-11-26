@@ -2,7 +2,7 @@
 // (netlify/voucher.js), para o email e o ecrã terem o mesmo plano.
 import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js?v=16';
 import { origemDe } from './js/origem.js';
-import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=16';
+import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=17';
 
 const FORMULARIO = 'simulador-clara';
 // Passa a Clara: cada pessoa tem um código de 6 letras (mesmo formato do site da pré-reserva).
