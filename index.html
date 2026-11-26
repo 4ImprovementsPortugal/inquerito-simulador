@@ -14,14 +14,14 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preload" href="assets/bricolage-grotesque-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/archivo-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=14">
-  <script type="module" src="app.js?v=14"></script><script src="cookies.js" defer></script><script src="pixel.js" defer></script><script src="posthog.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=15">
+  <script type="module" src="app.js?v=15"></script><script src="pixel.js?v=15" defer></script><script src="posthog.js?v=15" defer></script>
 </head>
 <body data-page="survey">
   <!-- formulário escondido para o Netlify Forms detetar os campos no build -->
   <form name="simulador-clara" data-netlify="true" netlify-honeypot="empresa-site" hidden>
     <input name="nome"><input name="email"><input name="telefone"><input name="respostas">
-    <input name="consentimento"><input name="codigo"><input name="pagina"><input name="event_id"><input name="origem"><input name="teste"><input name="empresa-site">
+    <input name="consentimento"><input name="consentimento_meta"><input name="codigo"><input name="pagina"><input name="event_id"><input name="origem"><input name="teste"><input name="empresa-site">
   </form>
   <a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>
   <main id="conteudo">
@@ -42,6 +42,7 @@
               <div class="field"><label for="lead-email">Email <span aria-hidden="true">*</span></label><input id="lead-email" name="email" type="email" placeholder="nome@exemplo.pt" autocomplete="email" maxlength="150" required></div>
               <div class="field"><label for="lead-phone">Telemóvel <span aria-hidden="true">*</span></label><input id="lead-phone" name="telefone" type="tel" inputmode="tel" placeholder="+351 9XX XXX XXX" autocomplete="tel" minlength="9" maxlength="25" required></div>
               <label class="checkbox-row"><input type="checkbox" name="privacy" id="privacy" required><span>Li a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a> e os <a href="termos.html" target="_blank" rel="noopener">termos e condições</a>, e aceito o tratamento dos meus dados para gerir o simulador e, quando aplicável, o voucher.</span></label>
+              <label class="checkbox-row"><input type="checkbox" name="meta" id="consent-meta"><span>Autorizo a Nº5 a partilhar o meu email e telemóvel, de forma cifrada, com a Meta para medir a eficácia dos anúncios.</span></label>
               <p class="contact-footnote">Para receber comunicações de marketing, será necessária autorização própria.</p>
             </div>
             <div class="hp-field" aria-hidden="true" style="position:absolute;left:-9999px;height:0;overflow:hidden"><label for="empresa-site">Não preenchas</label><input id="empresa-site" name="empresa-site" type="text" tabindex="-1" autocomplete="off"></div>

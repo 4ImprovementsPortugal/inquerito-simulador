@@ -1,12 +1,10 @@
-/* Nº5 Clara | PostHog (nuvem da UE): como as pessoas usam a página do inquérito, para afinar a mensagem.
-   - Com a estatística aceite (cookies.js → window.N5Cookies / evento "n5:cookies"): cliques, scroll, passos do inquérito
-     e gravações das sessões, com tudo o que se escreve escondido.
-   - Com a estatística rejeitada: só contagem anónima, sem cookies nem nada guardado no navegador (cookieless on_reject).
-   - Sem escolha feita: não sai nenhum evento; ficam à espera e saem quando a pessoa escolher.
-   Os pedidos saem pelo próprio domínio (/r, proxy no netlify.toml), por isso os bloqueadores de anúncios não os cortam
-   e a página não faz pedidos diretos a terceiros.
+/* Nº5 Clara | PostHog (nuvem da UE): como as pessoas usam o simulador, para afinar a mensagem.
+   O simulador não tem painel de cookies, por isso conta sempre de forma anónima: sem cookies, sem nada guardado no
+   navegador e sem gravações (cookieless on_reject, sempre «rejeitado»). No projeto do PostHog tem de estar ligado o
+   modo «cookieless server hash», senão os eventos anónimos são descartados.
+   Os pedidos saem pelo próprio domínio (/r, proxy no netlify.toml).
    A chave phc_ é pública por desenho (só permite enviar eventos). Nunca ponhas aqui uma chave pessoal (phx_).
-   Só liga nos endereços reais, para os testes locais não entrarem nos números.
+   Não liga em testes locais nem no GitHub Pages.
    Expõe window.N5Analytics.track(evento, propriedades). */
 (() => {
   'use strict';
@@ -16,21 +14,19 @@
 
   const fila = [];
   let ph = null;
-  let escolha = null; // { estatistica, marketing } depois de a pessoa decidir
 
   const ligado = !LOCAIS.includes(window.location.hostname) && !window.location.hostname.endsWith('.github.io');
-  const lerEscolha = () => { try { return window.N5Cookies ? window.N5Cookies.get() : null; } catch (_) { return null; } };
 
   function aplicar() {
-    if (!ph || !escolha) return;
-    if (escolha.estatistica) ph.opt_in_capturing(); else ph.opt_out_capturing();
+    if (!ph) return;
+    ph.opt_out_capturing(); // modo anónimo, sem cookies
     for (const [nome, props] of fila.splice(0)) ph.capture(nome, props);
   }
 
   window.N5Analytics = {
     track(nome, props = {}) {
       if (!ligado) return;
-      if (ph && escolha) ph.capture(nome, props);
+      if (ph) ph.capture(nome, props);
       else fila.push([nome, props]);
     },
   };
@@ -49,7 +45,7 @@
         cookieless_mode: 'on_reject',
         person_profiles: 'identified_only',
         capture_pageleave: true,
-        session_recording: { maskAllInputs: true },
+        disable_session_recording: true,
       });
       ph = window.posthog;
       aplicar();
@@ -58,8 +54,6 @@
     document.head.appendChild(s);
   }
 
-  document.addEventListener('n5:cookies', e => { escolha = e.detail; aplicar(); });
-  escolha = lerEscolha();
   // só depois de a página carregar, para não atrasar quem chega pelo anúncio
   if (document.readyState === 'complete') carregar();
   else window.addEventListener('load', carregar, { once: true });

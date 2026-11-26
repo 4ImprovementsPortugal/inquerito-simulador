@@ -137,6 +137,8 @@ function initSurvey() {
     const clean = limparRespostas(responses);
     // id do evento Lead: o mesmo no pixel (navegador) e no webhook do GHL (feito pela função), para não contar duas vezes
     const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    // autorização opcional (desmarcada por omissão) para partilhar email e telemóvel, cifrados, com a Meta
+    const autorizaMeta = qs('#consent-meta').checked;
     submitting = true;
     submitButton.disabled = true;
     const originalLabel = submitButton.innerHTML;
@@ -156,6 +158,7 @@ function initSurvey() {
           telefone: phone.value.trim(),
           respostas: JSON.stringify(clean),
           consentimento: true,
+          consentimento_meta: autorizaMeta ? 'sim' : 'nao',
           codigo: meuCodigo(),
           origem: origemDe(location.pathname, location.search),
           pagina: location.href,
@@ -176,7 +179,8 @@ function initSurvey() {
       const serve = adequada(clean);
       marcar('simulador_enviado', { adequada: serve, plano: planoDoConsultor(clean).plano });
       // só conta como Lead quem a Clara serve, para os anúncios não aprenderem com o público errado
-      if (serve) window.N5Pixel?.track('Lead', { content_name: 'Simulador Nº5 Clara' }, { eventID: eventId });
+      // sem a autorização, nada é carregado nem enviado à Meta
+      if (serve && autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
     } catch (err) {
       console.error('Simulador: o envio falhou:', err.message, '(405/501/404 = o site não está a correr na Netlify; sem erro de rede = falta o formulário detetado)');
       marcar('simulador_falhou');

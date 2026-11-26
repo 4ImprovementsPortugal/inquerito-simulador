@@ -17,6 +17,7 @@ export function corpoWebhook(dados = {}) {
     ...legiveis,
     plano_recomendado: planoDoConsultor(r).nomePlano,
     consentimento: true,
+    consentimento_meta: dados.consentimento_meta === 'sim',
     origem: dados.origem || '',
     pagina: dados.pagina || '',
     event_id: dados.event_id || '',

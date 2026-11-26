@@ -1,17 +1,20 @@
 /* Nº5 Clara | Meta Pixel 2995898050758755.
-   Só carrega com os cookies de marketing aceites (cookies.js → window.N5Cookies / evento "n5:cookies"),
-   como diz a política de privacidade. Expõe window.N5Pixel.track(evento, dados, opcoes). */
+   Só carrega quando a pessoa marca a autorização no formulário do simulador e o envia. Sem ela, a página não faz
+   nenhum pedido à Meta. O pixel cifra (SHA-256) o email e o telemóvel no navegador antes de os enviar.
+   Expõe window.N5Pixel.lead({ email, telefone, eventID }), que resolve quando o evento teve tempo de sair. */
 (() => {
   'use strict';
-  // pré-visualização no GitHub Pages: sem pixel, para não entrar nos números dos anúncios
-  if (window.location.hostname.endsWith('.github.io')) { window.N5Pixel = { track() {} }; return; }
   const PIXEL_ID = '2995898050758755';
-  let ativo = false;
-  const pendentes = [];
 
-  function carregar() {
-    if (ativo) return;
-    ativo = true;
+  /* mesmos formatos que a Meta pede: email em minúsculas; telemóvel só com dígitos e indicativo do país */
+  const email = e => String(e || '').trim().toLowerCase();
+  const telefone = t => {
+    let d = String(t || '').replace(/\D/g, '');
+    if (d.startsWith('00')) d = d.slice(2);
+    return d.length === 9 ? '351' + d : d;
+  };
+
+  function enviar(dados) {
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -20,25 +23,26 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', PIXEL_ID);
-    fbq('track', 'PageView');
-    pendentes.splice(0).forEach(args => fbq('track', ...args));
+    fbq('set', 'autoConfig', false, PIXEL_ID); /* sem recolha automática de cliques e campos */
+    fbq('init', PIXEL_ID, { em: email(dados.email), ph: telefone(dados.telefone) });
+    fbq('track', 'Lead', { content_name: 'Simulador Nº5 Clara' }, { eventID: dados.eventID });
   }
 
-  const marketingAceite = () => {
-    try { return !!(window.N5Cookies && window.N5Cookies.get()?.marketing); } catch (_) { return false; }
-  };
-
   window.N5Pixel = {
-    track(evento, dados, opcoes) {
-      const args = [evento, dados || {}, opcoes || {}];
-      if (ativo && window.fbq) fbq('track', ...args);
-      else pendentes.push(args); /* só é enviado se a pessoa aceitar o marketing nesta página */
-    }
+    lead(dados) {
+      /* pré-visualização (GitHub Pages) e testes locais: não entram nos números dos anúncios */
+      const h = window.location.hostname;
+      if (['', 'localhost', '127.0.0.1'].includes(h) || h.endsWith('.github.io')) return Promise.resolve();
+      enviar(dados);
+      /* espera a biblioteca carregar antes de mudar de página, no máximo 2,5 s */
+      return new Promise(resolve => {
+        const fim = Date.now() + 2500;
+        const ver = () => {
+          if ((window.fbq && window.fbq.callMethod) || Date.now() > fim) setTimeout(resolve, 400);
+          else setTimeout(ver, 100);
+        };
+        ver();
+      });
+    },
   };
-
-  document.addEventListener('n5:cookies', e => { if (e.detail?.marketing) carregar(); });
-  const verificar = () => { if (marketingAceite()) carregar(); };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', verificar);
-  else verificar();
 })();
