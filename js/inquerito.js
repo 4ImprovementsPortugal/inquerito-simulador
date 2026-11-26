@@ -18,28 +18,6 @@ export const PERGUNTAS = [
     opcoes: [['ate-10', 'Até 10'], ['10-30', '10 a 30'], ['30-60', '30 a 60'], ['mais-60', 'Mais de 60']],
   },
   {
-    id: 'resposta', tipo: 'opcoes', texto: 'Quanto tempo demoras, em média, a responder a uma lead nova?',
-    opcoes: [['minutos', 'Menos de 15 minutos'], ['hora', 'Até 1 hora'], ['horas', 'Algumas horas'], ['dia', 'No dia seguinte ou mais']],
-  },
-  {
-    id: 'admin', tipo: 'opcoes', texto: 'Quantas horas por semana vão para tarefas administrativas: CRM, mensagens, documentos e relatórios?',
-    opcoes: [['menos-3', 'Menos de 3 horas'], ['3-6', '3 a 6 horas'], ['6-10', '6 a 10 horas'], ['mais-10', 'Mais de 10 horas']],
-  },
-  {
-    id: 'dores', tipo: 'varias', max: 3, texto: 'O que te custa mais no dia a dia? Escolhe até 3.',
-    opcoes: [
-      ['leads', 'Responder às leads a tempo'],
-      ['seguimento', 'Fazer seguimento sem deixar cair ninguém'],
-      ['organizar', 'Saber por onde começar o dia'],
-      ['crm', 'Preencher o CRM'],
-      ['angariar', 'Angariar imóveis'],
-      ['documentos', 'Juntar os documentos dos imóveis'],
-      ['proprietarios', 'Manter os proprietários informados'],
-      ['base', 'Voltar a falar com contactos antigos'],
-      ['chamadas', 'Saber o que melhorar nas chamadas'],
-    ],
-  },
-  {
     id: 'perdes', tipo: 'opcoes', texto: 'Onde sentes que perdes mais negócios?',
     opcoes: [
       ['lead-fria', 'Leads que arrefecem antes de eu responder'],
@@ -61,11 +39,6 @@ export const PERGUNTAS = [
       ['reativar', 'Voltar a falar com a minha base de contactos'],
       ['chamadas', 'Análise e coaching das minhas chamadas'],
     ],
-  },
-  { id: 'resolver', tipo: 'texto', max: 300, texto: 'Se a Clara te resolvesse um problema amanhã, qual era?', ajuda: 'Escreve como dirias a um colega. Podes saltar.' },
-  {
-    id: 'objetivo', tipo: 'opcoes', texto: 'O que queres mais nos próximos 12 meses?',
-    opcoes: [['negocios', 'Fechar mais negócios'], ['angariacoes', 'Ter mais angariações'], ['tempo', 'Ter mais tempo, a faturar o mesmo'], ['organizar', 'Ter tudo organizado num só sítio']],
   },
   {
     id: 'valor', tipo: 'opcoes', texto: 'Quanto pagarias por mês por uma assistente que fizesse o que escolheste?',

@@ -1,6 +1,6 @@
 # Nº5 Clara | Simulador «A Clara é para ti?»
 
-Versão do inquérito em forma de simulador: 11 perguntas e um resultado.
+Versão do inquérito em forma de simulador: 6 perguntas e um resultado.
 
 ## Regra
 

@@ -1,6 +1,6 @@
 // As perguntas, o plano e as regras vêm de js/inquerito.js, o mesmo módulo que corre no servidor
 // (netlify/voucher.js), para o email e o ecrã terem o mesmo plano.
-import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js';
+import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js?v=14';
 import { origemDe } from './js/origem.js';
 
 const FORMULARIO = 'simulador-clara';
