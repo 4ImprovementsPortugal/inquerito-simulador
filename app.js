@@ -1,7 +1,8 @@
 // As perguntas, o plano e as regras vêm de js/inquerito.js, o mesmo módulo que corre no servidor
 // (netlify/voucher.js), para o email e o ecrã terem o mesmo plano.
-import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js?v=14';
+import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js?v=16';
 import { origemDe } from './js/origem.js';
+import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=16';
 
 const FORMULARIO = 'simulador-clara';
 // Passa a Clara: cada pessoa tem um código de 6 letras (mesmo formato do site da pré-reserva).
@@ -179,6 +180,18 @@ function initSurvey() {
       const serve = adequada(clean);
       marcar('simulador_enviado', { adequada: serve, plano: planoDoConsultor(clean).plano });
       // só conta como Lead quem a Clara serve, para os anúncios não aprenderem com o público errado
+      // webhook do GHL: todas as respostas, com a marca «adequada». Não corre em testes locais e nunca trava o simulador.
+      if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
+        const corte = new AbortController();
+        const relogio = setTimeout(() => corte.abort(), 5000);
+        await fetch(WEBHOOK_SIMULADOR, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(corpoWebhook({ nome: name.value, email: email.value, telefone: phone.value, respostas: clean, consentimentoMeta: autorizaMeta, origem: origemDe(location.pathname, location.search), pagina: location.href, event_id: eventId })),
+          keepalive: true,
+          signal: corte.signal,
+        }).catch(e => console.warn('Simulador: o webhook do GHL falhou:', e.message)).finally(() => clearTimeout(relogio));
+      }
       // sem a autorização, nada é carregado nem enviado à Meta
       if (serve && autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
     } catch (err) {

@@ -1,11 +1,11 @@
 import { enviarParaGhl } from '../ghl.js'
 import { codigoVoucher, enviarEmailVoucher } from '../voucher.js'
-import { enviarWebhookInquerito } from '../webhook.js'
 import { lerRespostas, adequada } from '../../js/inquerito.js'
 
 /* corre a cada inscrição válida do formulário «simulador-clara» (Netlify Forms; o spam fica de fora).
-   - A Clara serve a pessoa: contacto no GHL, email com o voucher e o plano e, se configurado, o webhook do workflow.
-   - Não serve (menos de 2 anos): só o contacto no GHL com a etiqueta «simulador-nao-adequado». Sem voucher, email ou webhook.
+   - A Clara serve a pessoa: contacto no GHL, email com o voucher e o plano.
+   - Não serve (menos de 2 anos): só o contacto no GHL com a etiqueta «simulador-nao-adequado». Sem voucher nem email.
+   O webhook do GHL é chamado pelo navegador (js/webhook.js).
    Precisa das variáveis GHL_TOKEN e GHL_LOCATION_ID (Netlify > Site configuration > Environment variables).
    O token do GHL precisa também de conversations/message.write, e numerocinco.pt tem de ser domínio de envio no GHL. */
 export const handler = async event => {
@@ -19,17 +19,7 @@ export const handler = async event => {
   if (payload.form_name !== 'simulador-clara') return { statusCode: 200 }
 
   const serve = adequada(lerRespostas(payload.data?.respostas))
-  const { GHL_TOKEN: token, GHL_LOCATION_ID: localizacao, GHL_WEBHOOK_SIMULADOR: webhook } = process.env
-
-  /* webhook do workflow do GHL (opcional): o endereço fica só na variável GHL_WEBHOOK_SIMULADOR, nunca no código */
-  if (serve && webhook) {
-    try {
-      const r = await enviarWebhookInquerito({ dados: payload.data, url: webhook })
-      console.log('webhook GHL simulador', r.ok ? 'enviado' : `falhou (${r.estado})`)
-    } catch (e) {
-      console.error('webhook GHL falhou:', e.message)
-    }
-  }
+  const { GHL_TOKEN: token, GHL_LOCATION_ID: localizacao } = process.env
 
   if (!token || !localizacao) {
     console.log('GHL por configurar: falta GHL_TOKEN ou GHL_LOCATION_ID')
