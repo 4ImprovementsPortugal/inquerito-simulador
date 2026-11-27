@@ -29,6 +29,8 @@ const qs = (selector, root = document) => root.querySelector(selector);
 // PostHog (posthog.js): só sai com a escolha de cookies feita; nunca leva dados pessoais nem respostas.
 const marcar = (nome, props) => window.N5Analytics?.track(nome, props);
 const getPage = () => document.body.dataset.page;
+/* formato que a Meta pede para o clique no anúncio: fb.1.<momento>.<fbclid> */
+const fbcDoLink = () => { const id = new URLSearchParams(location.search).get('fbclid'); return id ? `fb.1.${Date.now()}.${id}` : ''; };
 const codificar = obj => Object.entries(obj).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
 
 function initSurvey() {
@@ -160,6 +162,8 @@ function initSurvey() {
           respostas: JSON.stringify(clean),
           consentimento: true,
           consentimento_meta: autorizaMeta ? 'sim' : 'nao',
+          // identificador do clique no anúncio (vem no link como fbclid), só com a autorização para a Meta
+          fbc: autorizaMeta ? fbcDoLink() : '',
           codigo: meuCodigo(),
           origem: origemDe(location.pathname, location.search),
           pagina: location.href,

@@ -1,6 +1,25 @@
 import { enviarParaGhl } from '../ghl.js'
 import { codigoVoucher, enviarEmailVoucher } from '../voucher.js'
 import { lerRespostas, adequada } from '../../js/inquerito.js'
+import { dadosUtilizador, enviarEvento } from '../meta-capi.js'
+
+/* API de Conversões: o mesmo Lead que o pixel envia no navegador, agora também pelo servidor (com o mesmo event_id, a Meta junta os dois).
+   Só para quem a Clara serve e só com a autorização para a Meta marcada no formulário. A Netlify junta ip e user_agent a cada inscrição. */
+export async function enviarLeadSimulador(payload, opcoes) {
+  const d = payload?.data || {}
+  if (d.teste === '1') return { ok: false, motivo: 'inscrição de teste interno' }
+  if (d.consentimento_meta !== 'sim') return { ok: false, motivo: 'sem autorização para a Meta' }
+  if (!adequada(lerRespostas(d.respostas))) return { ok: false, motivo: 'a Clara não serve (não conta como Lead)' }
+  return enviarEvento({
+    event_name: 'Lead',
+    event_time: Math.floor(Date.parse(payload.created_at || '') / 1000) || Math.floor(Date.now() / 1000),
+    event_id: d.event_id || undefined,
+    action_source: 'website',
+    event_source_url: d.pagina || undefined,
+    user_data: dadosUtilizador({ email: d.email, telefone: d.telefone, nome: d.nome, ip: d.ip || payload.ip, ua: d.user_agent || payload.user_agent, fbc: d.fbc }),
+    custom_data: { content_name: 'Simulador Nº5 Clara' },
+  }, opcoes)
+}
 
 /* corre a cada inscrição válida do formulário «simulador-clara» (Netlify Forms; o spam fica de fora).
    - A Clara serve a pessoa: contacto no GHL, email com o voucher e o plano.
@@ -19,6 +38,13 @@ export const handler = async event => {
   if (payload.form_name !== 'simulador-clara') return { statusCode: 200 }
 
   const serve = adequada(lerRespostas(payload.data?.respostas))
+
+  try {
+    const r = await enviarLeadSimulador(payload)
+    console.log('Meta CAPI Lead simulador:', r.ok ? 'enviado' : r.motivo || `falhou (${r.estado}) ${JSON.stringify(r.resposta)}`)
+  } catch (e) {
+    console.error('Meta CAPI falhou:', e.message)
+  }
   const { GHL_TOKEN: token, GHL_LOCATION_ID: localizacao } = process.env
 
   if (!token || !localizacao) {
