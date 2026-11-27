@@ -2,14 +2,15 @@
    O simulador não tem painel de cookies, por isso conta sempre de forma anónima: sem cookies, sem nada guardado no
    navegador e sem gravações (cookieless on_reject, sempre «rejeitado»). No projeto do PostHog tem de estar ligado o
    modo «cookieless server hash», senão os eventos anónimos são descartados.
-   Os pedidos saem pelo próprio domínio (/r, proxy no netlify.toml).
+   O GitHub Pages não faz de intermediário: os pedidos vão diretos ao PostHog da UE.
    A chave phc_ é pública por desenho (só permite enviar eventos). Nunca ponhas aqui uma chave pessoal (phx_).
    Não liga em testes locais nem no GitHub Pages.
    Expõe window.N5Analytics.track(evento, propriedades). */
 (() => {
   'use strict';
   const TOKEN = 'phc_knF2fZccBcGVgHcayHbPfcYfXguFx3jzxaBksdduz9R3';
-  const HOST = '/r';
+  const HOST = 'https://eu.i.posthog.com';
+  const FICHEIROS = 'https://eu-assets.i.posthog.com';
   const LOCAIS = ['', 'localhost', '127.0.0.1'];
 
   const fila = [];
@@ -35,7 +36,7 @@
   function carregar() {
     const s = document.createElement('script');
     s.async = true;
-    s.src = HOST + '/static/array.js';
+    s.src = FICHEIROS + '/static/array.js';
     s.onload = () => {
       if (!window.posthog || typeof window.posthog.init !== 'function') return;
       window.posthog.init(TOKEN, {

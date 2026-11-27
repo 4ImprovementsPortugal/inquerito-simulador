@@ -1,23 +1,22 @@
 # Nº5 Clara | Simulador «A Clara é para ti?»
 
-Versão do inquérito em forma de simulador: 6 perguntas e um resultado.
+Publicado em **https://simulador.numerocinco.pt** com **GitHub Pages** (ramo `main`, ficheiro `CNAME`).
+DNS de `numerocinco.pt`: registo `CNAME` `simulador` para `4improvementsportugal.github.io`.
 
 ## Regra
 
-A Clara **não** é para quem responde «Menos de 2 anos» como consultor imobiliário. Em todos os outros casos é.
-A regra está num só sítio: `adequada()` em `js/inquerito.js`, usada pela página e pelo servidor.
+A Clara **não** é para quem responde «Menos de 2 anos» como consultor imobiliário. A regra está em `adequada()`, em `js/inquerito.js`.
 
-| Resultado | Ecrã | GHL | Email com voucher | Webhook | Lead no pixel |
-|---|---|---|---|---|---|
-| É para ti | plano, 15 dias, Passa a Clara | `simulador-adequado`, `voucher-clara-15-dias`, `plano-…` | sim | sim (se configurado) | sim |
-| Não é para ti | explicação, sem voucher | `simulador-nao-adequado` | não | não | não |
+## Envio
 
-## Publicar (Netlify)
+O navegador envia cada resposta para o webhook do GHL definido em `js/webhook.js` (não em `localhost`). É o único envio:
+**o email do voucher tem de ser feito pelo workflow do GHL**, só quando `adequada` é `true`.
+O repositório e o endereço do webhook são públicos: o workflow deve tratar o que chega como não verificado.
 
-1. Criar um site novo a partir deste repositório (o `netlify.toml` já está configurado, sem build).
-2. Variáveis de ambiente: `GHL_TOKEN` e `GHL_LOCATION_ID`. **Não marcar o `GHL_LOCATION_ID` como segredo:** o endereço do webhook em `js/webhook.js` contém esse id e a Netlify bloquearia o build.
-3. Confirmar em **Forms** que aparece `simulador-clara` (ativar a deteção de formulários e voltar a publicar, se preciso).
-4. Quando houver domínio, pôr em `index.html` o `og:url`, o `canonical` e o `og:image` com endereço completo.
+## Medição
+
+- Meta Pixel: só carrega se a pessoa marcar a autorização no formulário (`pixel.js`).
+- PostHog: contagem anónima, sem cookies (`posthog.js`).
 
 ## Correr localmente
 
@@ -25,13 +24,6 @@ A regra está num só sítio: `adequada()` em `js/inquerito.js`, usada pela pág
 python -m http.server 8080
 ```
 
-Em local nada é enviado; o percurso segue para a página de resultado.
+## Ficheiros não usados
 
-## Por rever
-
-`privacidade.html` e `termos.html` vêm do inquérito e ainda não falam do simulador.
-
-## Webhook do GHL
-
-O navegador envia todas as respostas para o webhook definido em `js/webhook.js`, também no GitHub Pages (não em `localhost`).
-O campo `adequada` diz se a Clara serve a pessoa: o workflow não deve enviar ofertas quando é `false`.
+`netlify/` e `netlify.toml` são do envio pela Netlify (GHL e email do voucher). No GitHub Pages não correm.

@@ -4,7 +4,6 @@ import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inq
 import { origemDe } from './js/origem.js';
 import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=17';
 
-const FORMULARIO = 'simulador-clara';
 // Passa a Clara: cada pessoa tem um código de 6 letras (mesmo formato do site da pré-reserva).
 // A ligação pessoal aponta para esse site, onde as pré-reservas são contadas.
 const SITE_PRE_RESERVA = 'https://assistenteclara.numerocinco.pt';
@@ -29,7 +28,6 @@ const qs = (selector, root = document) => root.querySelector(selector);
 // PostHog (posthog.js): só sai com a escolha de cookies feita; nunca leva dados pessoais nem respostas.
 const marcar = (nome, props) => window.N5Analytics?.track(nome, props);
 const getPage = () => document.body.dataset.page;
-const codificar = obj => Object.entries(obj).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
 
 function initSurvey() {
   const stage = qs('#question-stage');
@@ -136,7 +134,7 @@ function initSurvey() {
     if (!qs('#privacy').checked) { showError('Precisamos que confirmes a política de privacidade para concluir.'); qs('#privacy').focus(); return; }
 
     const clean = limparRespostas(responses);
-    // id do evento Lead: o mesmo no pixel (navegador) e no webhook do GHL (feito pela função), para não contar duas vezes
+    // id do evento Lead: o mesmo no pixel e no webhook do GHL, para não contar duas vezes
     const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
     // autorização opcional (desmarcada por omissão) para partilhar email e telemóvel, cifrados, com a Meta
     const autorizaMeta = qs('#consent-meta').checked;
@@ -145,57 +143,27 @@ function initSurvey() {
     const originalLabel = submitButton.innerHTML;
     submitButton.textContent = 'A enviar...';
     try {
-      // Netlify Forms: o formulário escondido «inquerito-clara» está no index.html.
-      // A função netlify/functions/submission-created.mjs trata do GHL e do email com o voucher.
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 15000);
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: codificar({
-          'form-name': FORMULARIO,
-          nome: name.value.trim(),
-          email: email.value.trim(),
-          telefone: phone.value.trim(),
-          respostas: JSON.stringify(clean),
-          consentimento: true,
-          consentimento_meta: autorizaMeta ? 'sim' : 'nao',
-          codigo: meuCodigo(),
-          origem: origemDe(location.pathname, location.search),
-          pagina: location.href,
-          event_id: eventId,
-          teste: '',
-          'empresa-site': qs('#empresa-site').value || '',
-        }),
-        signal: ctrl.signal,
-      });
-      clearTimeout(timer);
-      // Servidor local simples (python -m http.server) não aceita POST: deixa testar o resto do percurso.
-      // o GitHub Pages serve só para ver a página: também não recebe o formulário
-      const local = ['localhost', '127.0.0.1'].includes(location.hostname) || location.hostname.endsWith('.github.io');
-      if (!res.ok && local && [404, 405, 501].includes(res.status)) {
-        console.warn('Modo de pré-visualização: o formulário não foi enviado (só a Netlify recebe o POST). Segue para a página de obrigado.');
-      } else if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // Evento Lead do pixel (só dispara com marketing aceite, ver pixel.js). O webhook do GHL é chamado pela função da Netlify.
-      const serve = adequada(clean);
-      marcar('simulador_enviado', { adequada: serve, plano: planoDoConsultor(clean).plano });
-      // só conta como Lead quem a Clara serve, para os anúncios não aprenderem com o público errado
-      // webhook do GHL: todas as respostas, com a marca «adequada». Não corre em testes locais e nunca trava o simulador.
+      // O site está no GitHub Pages (sem servidor): o webhook do GHL é o único envio e só avançamos se ele aceitar.
+      // Em testes locais nada é enviado.
       if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
         const corte = new AbortController();
-        const relogio = setTimeout(() => corte.abort(), 5000);
-        await fetch(WEBHOOK_SIMULADOR, {
+        const relogio = setTimeout(() => corte.abort(), 15000);
+        // campo escondido contra bots: preenchido, não envia
+        const res = qs('#empresa-site').value ? { ok: true } : await fetch(WEBHOOK_SIMULADOR, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(corpoWebhook({ nome: name.value, email: email.value, telefone: phone.value, respostas: clean, consentimentoMeta: autorizaMeta, origem: origemDe(location.pathname, location.search), pagina: location.href, event_id: eventId })),
-          keepalive: true,
           signal: corte.signal,
-        }).catch(e => console.warn('Simulador: o webhook do GHL falhou:', e.message)).finally(() => clearTimeout(relogio));
+        }).finally(() => clearTimeout(relogio));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
       }
+      const serve = adequada(clean);
+      marcar('simulador_enviado', { adequada: serve, plano: planoDoConsultor(clean).plano });
+      // só conta como Lead na Meta quem a Clara serve e deu a autorização
       // sem a autorização, nada é carregado nem enviado à Meta
       if (serve && autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
     } catch (err) {
-      console.error('Simulador: o envio falhou:', err.message, '(405/501/404 = o site não está a correr na Netlify; sem erro de rede = falta o formulário detetado)');
+      console.error('Simulador: o envio para o webhook do GHL falhou:', err.message);
       marcar('simulador_falhou');
       showError('Não conseguimos enviar. Confirma a ligação à internet e tenta outra vez.');
       submitting = false;
