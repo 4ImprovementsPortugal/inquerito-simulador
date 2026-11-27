@@ -5,12 +5,12 @@ DNS de `numerocinco.pt`: registo `CNAME` `simulador` para `4improvementsportugal
 
 ## Regra
 
-A Clara **não** é para quem responde «Menos de 2 anos» como consultor imobiliário. A regra está em `adequada()`, em `js/inquerito.js`.
+Todas as pessoas são qualificadas: toda a gente vê «a Clara é para ti», o plano e os 15 dias.
 
 ## Envio
 
 O navegador envia cada resposta para o webhook do GHL definido em `js/webhook.js` (não em `localhost`). É o único envio:
-**o email do voucher tem de ser feito pelo workflow do GHL**, só quando `adequada` é `true`.
+**o email do voucher tem de ser feito pelo workflow do GHL.**
 O repositório e o endereço do webhook são públicos: o workflow deve tratar o que chega como não verificado.
 
 ## Medição

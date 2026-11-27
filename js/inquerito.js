@@ -49,10 +49,6 @@ export const PERGUNTAS = [
 const porId = Object.fromEntries(PERGUNTAS.map(p => [p.id, p]))
 export const rotulo = (id, valor) => porId[id]?.opcoes?.find(([v]) => v === valor)?.[1]
 
-/* simulador: a Clara é para a pessoa? O único caso em que dizemos que não é ter menos de 2 anos como consultor.
-   A mesma regra corre na página (resultado) e no servidor (voucher e etiquetas). */
-export const adequada = respostas => respostas?.experiencia !== 'menos-2'
-
 /* só ficam respostas que existem nas perguntas: o servidor volta a montar o plano com o que chega do formulário */
 export function limparRespostas(r = {}) {
   const limpo = {}

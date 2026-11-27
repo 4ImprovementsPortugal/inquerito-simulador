@@ -1,8 +1,8 @@
 // As perguntas, o plano e as regras vêm de js/inquerito.js, o mesmo módulo que corre no servidor
 // (netlify/voucher.js), para o email e o ecrã terem o mesmo plano.
-import { PERGUNTAS, planoDoConsultor, limparRespostas, adequada } from './js/inquerito.js?v=16';
+import { PERGUNTAS, planoDoConsultor, limparRespostas } from './js/inquerito.js?v=19';
 import { origemDe } from './js/origem.js';
-import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=17';
+import { WEBHOOK_SIMULADOR, corpoWebhook } from './js/webhook.js?v=19';
 
 // Passa a Clara: cada pessoa tem um código de 6 letras (mesmo formato do site da pré-reserva).
 // A ligação pessoal aponta para esse site, onde as pré-reservas são contadas.
@@ -157,11 +157,10 @@ function initSurvey() {
         }).finally(() => clearTimeout(relogio));
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
       }
-      const serve = adequada(clean);
-      marcar('simulador_enviado', { adequada: serve, plano: planoDoConsultor(clean).plano });
-      // só conta como Lead na Meta quem a Clara serve e deu a autorização
+      marcar('simulador_enviado', { plano: planoDoConsultor(clean).plano });
+      // Lead na Meta só para quem deu a autorização
       // sem a autorização, nada é carregado nem enviado à Meta
-      if (serve && autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
+      if (autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
     } catch (err) {
       console.error('Simulador: o envio para o webhook do GHL falhou:', err.message);
       marcar('simulador_falhou');
@@ -197,16 +196,9 @@ function initThanks() {
   }
   if (!result?.answers) { qs('#no-result').hidden = false; return; }
   const first = (result.firstName || '').slice(0, 80);
-  if (!adequada(result.answers)) {
-    qs('#not-fit').hidden = false;
-    document.body.classList.add('result-not-fit');
-    qs('#notfit-name').textContent = first ? `, ${first}` : '';
-    marcar('simulador_resultado', { adequada: false });
-    return;
-  }
   qs('#has-result').hidden = false;
-  qs('#after-result').hidden = false; // o resto da página só aparece depois de um diagnóstico favorável
-  marcar('simulador_resultado', { adequada: true });
+  qs('#after-result').hidden = false; // o resto da página só aparece depois do diagnóstico
+  marcar('simulador_resultado');
 
   const p = planoDoConsultor(result.answers);
   qs('#thanks-name').textContent = first ? `, ${first}` : '';

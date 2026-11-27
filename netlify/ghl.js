@@ -1,7 +1,7 @@
 /* o inquérito vira um contacto no GHL: dados, etiquetas para os workflows e uma nota com as respostas.
    Copiado e reduzido de netlify/ghl.js do site principal (N5BRAND/n5-clara-site). */
 import { etiquetaPagina } from '../js/origem.js'
-import { lerRespostas, resumoInquerito, planoDoConsultor, adequada } from '../js/inquerito.js'
+import { lerRespostas, resumoInquerito, planoDoConsultor } from '../js/inquerito.js'
 
 export const PRODUTO = 'N5 Clara'
 export const ETIQUETA = 'n5-clara'
@@ -36,11 +36,8 @@ export function paraGhl(dados, { campoCodigo } = {}) {
   const passa = codigoPassa(dados)
   const base = {
     contacto: { ...nomeSeparado(dados.nome), email: dados.email, phone: telefone(dados.telefone), source: `Simulador ${PRODUTO}`, ...(passa && campoCodigo ? { customFields: [{ id: campoCodigo, field_value: passa }] } : {}) },
-    /* quem a Clara não serve fica com etiqueta própria, sem a do voucher, para os workflows não lhe enviarem ofertas */
-    etiquetas: [ETIQUETA, 'simulador-clara', ...(dados.consentimento_meta === 'sim' ? ['meta-autorizado'] : []), ...(adequada(r) ? ['simulador-adequado', 'voucher-clara-15-dias', `plano-${p.plano}`] : ['simulador-nao-adequado']), ...daOrigem(dados)],
-    nota: [`Simulador da ${PRODUTO}.`, ...(adequada(r)
-      ? ['Resultado: a Clara é para esta pessoa.', `Voucher: ${dados.voucher || 'por gerar'} (15 dias do plano Clara, um por pessoa, não se junta à pré-reserva).`, `Plano que cobre o que escolheu: ${p.nomePlano}`, ...(passa ? [`Código Passa a Clara: ${passa}`] : [])]
-      : ['Resultado: a Clara ainda não é para esta pessoa (menos de 2 anos como consultor). Sem voucher.']), `Partilha com a Meta (email e telemóvel cifrados): ${dados.consentimento_meta === 'sim' ? 'autorizada' : 'não autorizada'}.`, '', resumoInquerito(r), ...linhasExtra(dados)].join('\n'),
+    etiquetas: [ETIQUETA, 'simulador-clara', ...(dados.consentimento_meta === 'sim' ? ['meta-autorizado'] : []), 'voucher-clara-15-dias', `plano-${p.plano}`, ...daOrigem(dados)],
+    nota: [`Simulador da ${PRODUTO}.`, `Voucher: ${dados.voucher || 'por gerar'} (15 dias do plano Clara, um por pessoa, não se junta à pré-reserva).`, `Plano que cobre o que escolheu: ${p.nomePlano}`, ...(passa ? [`Código Passa a Clara: ${passa}`] : []), `Partilha com a Meta (email e telemóvel cifrados): ${dados.consentimento_meta === 'sim' ? 'autorizada' : 'não autorizada'}.`, '', resumoInquerito(r), ...linhasExtra(dados)].join('\n'),
   }
   return { ...base, contacto: sem(base.contacto) }
 }

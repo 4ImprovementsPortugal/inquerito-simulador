@@ -1,4 +1,4 @@
-/* voucher do inquérito (/inquerito/): 15 dias do plano Clara oferecidos a quem o simulador diz que a Clara serve.
+/* voucher do inquérito (/inquerito/): 15 dias do plano Clara oferecidos a quem acaba o simulador.
    Um por pessoa (por email), uso único, não se junta à pré-reserva de 27 €.
    O email sai pelo GHL (Conversations API), a partir de pedro.ferreira@numerocinco.pt, com o voucher e o plano.
    O GHL_TOKEN precisa da permissão de enviar mensagens (conversations/message.write) e o numerocinco.pt tem de estar

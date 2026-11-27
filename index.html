@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#15181D">
-  <meta name="description" content="Responde a 6 perguntas em 2 minutos e descobre se a Nº5 Clara é para ti. Se for, recebes o teu plano e 15 dias do plano Clara.">
+  <meta name="description" content="Responde a 6 perguntas em 2 minutos e descobre como a Nº5 Clara te pode ajudar. Recebes o teu plano e 15 dias do plano Clara.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="A Clara é para ti? Descobre em 2 minutos.">
-  <meta property="og:description" content="Faz o simulador: 6 perguntas sobre a tua rotina e ficas a saber se a Clara faz sentido para ti.">
+  <meta property="og:description" content="Faz o simulador: 6 perguntas sobre a tua rotina e ficas a saber como a Clara te pode ajudar.">
   <meta property="og:url" content="https://simulador.numerocinco.pt/">
   <meta property="og:image" content="https://simulador.numerocinco.pt/assets/partilha-clara.png">
   <link rel="canonical" href="https://simulador.numerocinco.pt/">
@@ -16,8 +16,8 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preload" href="assets/bricolage-grotesque-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/archivo-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=18">
-  <script type="module" src="app.js?v=18"></script><script src="pixel.js?v=18" defer></script><script src="posthog.js?v=18" defer></script>
+  <link rel="stylesheet" href="styles.css?v=19">
+  <script type="module" src="app.js?v=19"></script><script src="pixel.js?v=19" defer></script><script src="posthog.js?v=19" defer></script>
 </head>
 <body data-page="survey">
   <a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>
@@ -25,7 +25,7 @@
     <!-- 05 - SURVEY -->
     <section class="section survey-section survey-first dark" id="inquerito" aria-labelledby="survey-title">
       <div class="container survey-layout">
-        <div class="survey-pitch"><div class="logo hero-copy-logo" aria-label="Nº5 Clara"><img src="assets/simbolo-fundo-escuro.svg" width="62" height="33" alt=""><span>Nº5 <strong>Clara</strong></span></div><h1 id="survey-title"><span class="text-gold">A Clara é para ti?</span> Descobre em 2 minutos.</h1><p>Responde a 6 perguntas sobre a tua rotina. Se a Clara for para ti, recebes um plano personalizado e um voucher para 15 dias gratuitos do plano Clara.</p><div class="survey-points"><div><span class="tick">✓</span> Apenas 6 perguntas</div><div><span class="tick">✓</span> Resultado imediato, por regras e sem números inventados</div><div><span class="tick">✓</span> Um voucher por pessoa</div></div><p class="survey-disclaimer">O voucher de 15 dias não é acumulável com a oferta de pré-reserva de 27 €. A ativação depende das condições da campanha.</p></div>
+        <div class="survey-pitch"><div class="logo hero-copy-logo" aria-label="Nº5 Clara"><img src="assets/simbolo-fundo-escuro.svg" width="62" height="33" alt=""><span>Nº5 <strong>Clara</strong></span></div><h1 id="survey-title"><span class="text-gold">A Clara é para ti?</span> Descobre em 2 minutos.</h1><p>Responde a 6 perguntas sobre a tua rotina. No fim, recebes um plano personalizado e um voucher para 15 dias gratuitos do plano Clara.</p><div class="survey-points"><div><span class="tick">✓</span> Apenas 6 perguntas</div><div><span class="tick">✓</span> Resultado imediato, por regras e sem números inventados</div><div><span class="tick">✓</span> Um voucher por pessoa</div></div><p class="survey-disclaimer">O voucher de 15 dias não é acumulável com a oferta de pré-reserva de 27 €. A ativação depende das condições da campanha.</p></div>
         <div class="survey-card" id="questionnaire">
           <div class="form-top"><span class="form-mark">SIMULADOR Nº5 CLARA</span><span class="form-time" id="form-step-label">PERGUNTA 1 DE 6</span></div>
           <div class="progress-track" role="progressbar" aria-label="Progresso do simulador" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="survey-progress"><div class="progress-bar" id="progress-bar"></div></div>
@@ -34,11 +34,11 @@
             <div id="contact-stage" hidden>
               <span class="question-index">ÚLTIMO PASSO</span>
               <h3 class="question-title">Para onde enviamos o teu resultado?</h3>
-              <p class="question-help">Deixa os teus dados para veres se a Clara é para ti.</p>
+              <p class="question-help">Deixa os teus dados para veres o teu resultado.</p>
               <div class="field"><label for="lead-name">Nome completo <span aria-hidden="true">*</span></label><input id="lead-name" name="nome" type="text" placeholder="O teu nome" autocomplete="name" minlength="2" maxlength="100" required></div>
               <div class="field"><label for="lead-email">Email <span aria-hidden="true">*</span></label><input id="lead-email" name="email" type="email" placeholder="nome@exemplo.pt" autocomplete="email" maxlength="150" required></div>
               <div class="field"><label for="lead-phone">Telemóvel <span aria-hidden="true">*</span></label><input id="lead-phone" name="telefone" type="tel" inputmode="tel" placeholder="+351 9XX XXX XXX" autocomplete="tel" minlength="9" maxlength="25" required></div>
-              <label class="checkbox-row"><input type="checkbox" name="privacy" id="privacy" required><span>Li a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a> e os <a href="termos.html" target="_blank" rel="noopener">termos e condições</a>, e aceito o tratamento dos meus dados para gerir o simulador e, quando aplicável, o voucher.</span></label>
+              <label class="checkbox-row"><input type="checkbox" name="privacy" id="privacy" required><span>Li a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a> e os <a href="termos.html" target="_blank" rel="noopener">termos e condições</a>, e aceito o tratamento dos meus dados para gerir o simulador e o voucher.</span></label>
               <label class="checkbox-row"><input type="checkbox" name="meta" id="consent-meta"><span>Autorizo a Nº5 a partilhar o meu email e telemóvel, de forma cifrada, com a Meta para medir a eficácia dos anúncios.</span></label>
               <p class="contact-footnote">Para receber comunicações de marketing, será necessária autorização própria.</p>
             </div>
