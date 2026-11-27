@@ -137,7 +137,7 @@ function initSurvey() {
     // id do evento Lead: o mesmo no pixel e no webhook do GHL, para não contar duas vezes
     const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
     // autorização opcional (desmarcada por omissão) para partilhar email e telemóvel, cifrados, com a Meta
-    const autorizaMeta = qs('#consent-meta').checked;
+    const autorizaMeta = qs('#consent-meta').checked || window.N5Pixel?.aceite?.() === true;
     submitting = true;
     submitButton.disabled = true;
     const originalLabel = submitButton.innerHTML;
