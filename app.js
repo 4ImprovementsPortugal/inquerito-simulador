@@ -137,7 +137,7 @@ function initSurvey() {
     // id do evento Lead: o mesmo no pixel e no webhook do GHL, para não contar duas vezes
     const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
     // autorização opcional (desmarcada por omissão) para partilhar email e telemóvel, cifrados, com a Meta
-    const autorizaMeta = qs('#consent-meta').checked;
+    const autorizaMeta = qs('#consent-meta').checked || window.N5Pixel?.aceite?.() === true;
     submitting = true;
     submitButton.disabled = true;
     const originalLabel = submitButton.innerHTML;
@@ -160,7 +160,11 @@ function initSurvey() {
       marcar('simulador_enviado', { plano: planoDoConsultor(clean).plano });
       // Lead na Meta só para quem deu a autorização
       // sem a autorização, nada é carregado nem enviado à Meta
-      if (autorizaMeta) await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
+      if (autorizaMeta) {
+        await window.N5Pixel?.lead({ email: email.value, telefone: phone.value, eventID: eventId });
+        // o mesmo Lead pela API de Conversões (função na Netlify), com o mesmo id: a Meta conta-o uma vez
+        enviarCapi({ nome: name.value, email: email.value, telefone: phone.value, event_id: eventId });
+      }
     } catch (err) {
       console.error('Simulador: o envio para o webhook do GHL falhou:', err.message);
       marcar('simulador_falhou');
@@ -176,6 +180,26 @@ function initSurvey() {
     location.assign('obrigado.html');
   });
   render();
+}
+
+// API de Conversões: o site está no GitHub Pages, por isso o envio ao servidor da Meta passa por uma função da Netlify.
+// Só é chamada com a autorização para a Meta marcada. Não bloqueia a página: se falhar, o pixel já enviou o Lead.
+const CAPI_SIMULADOR = 'https://inquerito.clara.numerocinco.pt/.netlify/functions/capi-simulador';
+const cookie = nome => (document.cookie.match(new RegExp('(?:^|; )' + nome + '=([^;]*)')) || [])[1] || '';
+function fbcDoLink() {
+  const id = new URLSearchParams(location.search).get('fbclid');
+  return cookie('_fbc') || (id ? `fb.1.${Date.now()}.${id}` : '');
+}
+function enviarCapi(dados) {
+  if (['', 'localhost', '127.0.0.1'].includes(location.hostname) || location.hostname.endsWith('.github.io')) return;
+  try {
+    fetch(CAPI_SIMULADOR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...dados, consentimento_meta: true, fbp: cookie('_fbp'), fbc: fbcDoLink(), pagina: location.href }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* sem envio pelo servidor: fica o do pixel */ }
 }
 
 function el(tag, className, text) {

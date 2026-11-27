@@ -27,3 +27,10 @@ python -m http.server 8080
 ## Ficheiros não usados
 
 `netlify/` e `netlify.toml` são do envio pela Netlify (GHL e email do voucher). No GitHub Pages não correm.
+
+## Pixel e API de Conversões da Meta
+
+- **Pixel 2995898050758755** (`pixel.js`): só carrega quando a pessoa marca a caixa «Autorizo a Nº5 a partilhar…» e envia o simulador. Envia um `Lead` com um `eventID`.
+- **API de Conversões**: o simulador está no GitHub Pages (sem servidor), por isso o mesmo `Lead` vai para a função `capi-simulador` do site do inquérito na Netlify (`https://inquerito.clara.numerocinco.pt/.netlify/functions/capi-simulador`, repositório `n5-clara-inquerito`). Leva o mesmo id, por isso a Meta conta-o uma vez. Só é chamada com a autorização marcada.
+- Variáveis na Netlify (site do inquérito): `META_CAPI_TOKEN` (obrigatória) e `META_TEST_EVENT_CODE` (só durante os testes).
+- A função só aceita pedidos de `https://simulador.numerocinco.pt`. Se o domínio mudar, atualizar `ORIGENS` em `netlify/functions/capi-simulador.mjs`.

@@ -251,3 +251,6 @@ body[data-page="thanks"] .inner-main{flex:1}
 .not-fit .btn{margin-top:16px;min-width:220px}
 @media(max-width:640px){.not-fit .btn{width:100%}}
 .not-fit .nf-ola{display:block}
+.cookie-actions-2{grid-template-columns:1fr 1fr}
+.footer-links .cookie-settings-link{font-size:12px;color:rgba(245,244,240,.7);text-decoration:none}
+.footer-links .cookie-settings-link:hover{color:var(--cream)}
